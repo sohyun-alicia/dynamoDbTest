@@ -20,12 +20,21 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.206'
+    implementation 'com.amazonaws:aws-java-sdk:1.12.220'
     implementation 'org.springframework.data:spring-data-releasetrain:1.4.6.RELEASE'
     implementation 'com.github.derjust:spring-data-dynamodb:5.1.0'
-    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.17.181'
-
+    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.17.191'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.22'
+    implementation 'org.springframework.security:spring-security-oauth2-client'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-web'
+//    implementation 'com.amazonaws:aws-java-sdk:1.11.360'
+    implementation 'com.amazonaws:aws-java-sdk-core:1.12.220'
+    implementation 'com.amazonaws:aws-java-sdk-cognitoidp:1.12.220'
+    implementation 'junit:junit:4.13.1'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

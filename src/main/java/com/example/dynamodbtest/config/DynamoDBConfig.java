@@ -3,9 +3,12 @@ package com.example.dynamodbtest.config;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.example.dynamodbtest.service.TableService;
+import com.example.dynamodbtest.serviceImpl.TableServiceImpl;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,13 +33,13 @@ public class DynamoDBConfig {
     
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
-//        AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(amazonDynamoDBEndpoint, region);
-        AmazonDynamoDB amazonDynamoDB
-                = AmazonDynamoDBClientBuilder.standard()
+        AwsClientBuilder.EndpointConfiguration endpointConfiguration =
+                new AwsClientBuilder.EndpointConfiguration(amazonDynamoDBEndpoint, region);
+    
+        return AmazonDynamoDBClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(amazonAWSCredentials()))
+                .withEndpointConfiguration(endpointConfiguration)
                 .build();
-        
-        return amazonDynamoDB;
     }
     
     @Bean
@@ -46,7 +49,11 @@ public class DynamoDBConfig {
     
     @Bean
     public AWSCredentials amazonAWSCredentials() {
-        return new BasicAWSCredentials(
-                amazonAWSAccessKey, amazonAWSSecretKey);
+        return new BasicAWSCredentials(amazonAWSAccessKey, amazonAWSSecretKey);
+    }
+    
+    @Bean
+    public TableService tableService() {
+        return new TableServiceImpl(dynamoDB(), amazonDynamoDB());
     }
 }

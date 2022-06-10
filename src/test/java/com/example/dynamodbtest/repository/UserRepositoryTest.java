@@ -13,56 +13,73 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 
 @SpringBootTest(classes = DynamoDbTestApplication.class)
 @WebAppConfiguration
-@TestPropertySource(properties = {
-        "amazon.dynamodb.endpoint=http://localhost:8000/",
-        "amazon.aws.accesskey=test1",
-        "amazon.aws.secretkey=test231" })
 class UserRepositoryTest {
     
+    @Autowired
     private DynamoDB dynamoDB;
-    
-    private DynamoDBMapper dynamoDBMapper;
     
     @Autowired
     private AmazonDynamoDB amazonDynamoDB;
     
     @Autowired
-    UserRepository repository;
+    private UserRepository repository;
     
+    private String tableName = "com.example.dynamodbtest.model." + "User";
     
     @BeforeEach
-    void setUp() {
-        if (dynamoDB.getTable("User") == null) {
-            dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-    
-            CreateTableRequest tableRequest = dynamoDBMapper.generateCreateTableRequest(User.class);
+    public void createTable() {
+        try {
+            DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
+            Class<?> tableClass = Class.forName(tableName);
+            CreateTableRequest tableRequest = dynamoDBMapper.generateCreateTableRequest(tableClass);
             tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
-            amazonDynamoDB.createTable(tableRequest);
-        }
         
+            Table table = dynamoDB.createTable(tableRequest);
+            tableName = table.getTableName();
+            System.out.println(tableName + " 테이블을 생성중입니다. 다소 시간이 걸릴 수 있습니다.");
+            table.waitForActive();
+        }
+        catch (InterruptedException e) {
+            System.err.println(tableName + " 테이블 생성 요청에 실패했습니다.");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
     
-    @AfterEach
-    void after() {
-        Table user = dynamoDB.getTable("User");
-        user.delete();
-    }
-    
+  /*  @AfterEach
+    void 테이블_삭제() {
+        try {
+            Table table = dynamoDB.getTable(tableName);
+            table.delete();
+            System.out.println(tableName + " 테이블 삭제 요청중입니다. 다소 시간이 걸릴 수 있습니다.");
+            table.waitForDelete();
+        }
+        catch (InterruptedException e) {
+            System.err.println(tableName + " 테이블 삭제요청에 실패했습니다.");
+        }
+    }*/
+
     @Test
-    public void test() {
-        User user = new User("1", "test", "test", "test@test.com", "USER");
+    public void 유저_등록() {
+        User user = new User();
+        user.setUsername("test");
+        user.setEmail("test@test.com");
+        user.setPassword("test");
+        user.setRole("USER");
+        
         repository.save(user);
     
         Iterable<User> all = repository.findAll();
         for (User u : all) {
+            String id = u.getId();
             String username = u.getUsername();
             String role = u.getRole();
+            System.out.println("id = " + id);
             System.out.println("username = " + username);
             System.out.println("role = " + role);
         }
