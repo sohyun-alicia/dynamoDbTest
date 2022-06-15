@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>환영합니다.</title>
+</head>
+<body>
+<div>
+    <h1 class="title">OAuth 2.0 Spring Security Cognito Demo</h1>
+    <div sec:authorize="isAuthenticated()">
+        <div class="box">
+            안녕하세요, <strong th:text="${#authentication.name}"></strong>!
+        </div>
+        <div class="box">
+            <a th:href="@{/logout}">로그아웃</a>
+        </div>
+    </div>
+    <div sec:authorize="isAnonymous()">
+        <div class="box">
+            <a class="button login is-primary" th:href="@{/oauth2/authorization/cognito}">
+                Log in with Amazon Cognito</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

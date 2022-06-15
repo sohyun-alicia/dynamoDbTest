@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "cognito.logoutUrl",
+      "type": "java.lang.String",
+      "description": "Description for cognito.logoutUrl."
+  }
+] }
